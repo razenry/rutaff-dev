@@ -1,0 +1,58 @@
+services:
+  web:
+    image: nginx:alpine
+    container_name: rutaf_nginx
+    ports:
+      - "8000:80"
+    volumes:
+      - ../backend-api:/var/www/backend-api
+      - ./nginx/conf.d:/etc/nginx/conf.d
+    depends_on:
+      - app
+    networks:
+      - rutaf_network
+
+  app:
+    build:
+      context: ./php
+      dockerfile: Dockerfile
+    container_name: rutaf_php
+    volumes:
+      - ../backend-api:/var/www/backend-api
+    networks:
+      - rutaf_network
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: postgres:16-alpine
+    container_name: rutaf_postgres
+    environment:
+      POSTGRES_DB: rutaf_superapp
+      POSTGRES_USER: rutaf_user
+      POSTGRES_PASSWORD: rutaf_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - rutaf_pgdata:/var/lib/postgresql/data
+    networks:
+      - rutaf_network
+
+  redis:
+    image: redis:7-alpine
+    container_name: rutaf_redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - rutaf_redisdata:/data
+    networks:
+      - rutaf_network
+
+networks:
+  rutaf_network:
+    driver: bridge
+
+volumes:
+  rutaf_pgdata:
+  rutaf_redisdata:
