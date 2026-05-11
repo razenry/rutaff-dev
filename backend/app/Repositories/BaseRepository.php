@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Interfaces\BaseRepositoryInterface;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Pagination\LengthAwarePaginator;
 
 abstract class BaseRepository implements BaseRepositoryInterface
 {
@@ -15,36 +16,41 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->model = $model;
     }
 
-    public function all(array $columns = ['*'], array $relations = []): Collection
+    public function all(): Collection
     {
-        return $this->model->with($relations)->get($columns);
+        return $this->model->all();
     }
 
-    public function findById(int $id, array $columns = ['*'], array $relations = [], array $appends = []): ?Model
+    public function find(string $id): ?Model
     {
-        return $this->model->select($columns)->with($relations)->findOrFail($id)->append($appends);
+        return $this->model->find($id);
     }
 
-    public function create(array $payload): ?Model
+    public function create(array $data): Model
     {
-        $model = $this->model->create($payload);
-        return $model->fresh();
+        return $this->model->create($data);
     }
 
-    public function update(int $id, array $payload): bool
+    public function update(string $id, array $data): bool
     {
-        $model = $this->findById($id);
-        return $model->update($payload);
+        $record = $this->find($id);
+        if ($record) {
+            return $record->update($data);
+        }
+        return false;
     }
 
-    public function delete(int $id): bool
+    public function delete(string $id): bool
     {
-        $model = $this->findById($id);
-        return $model->delete();
+        $record = $this->find($id);
+        if ($record) {
+            return $record->delete();
+        }
+        return false;
     }
 
-    public function paginate(int $perPage = 15, array $columns = ['*'], array $relations = [])
+    public function paginate(int $perPage = 15): LengthAwarePaginator
     {
-        return $this->model->with($relations)->paginate($perPage, $columns);
+        return $this->model->paginate($perPage);
     }
 }

@@ -1,6 +1,7 @@
-# Enterprise Fullstack Boilerplate (Laravel + Next.js + Docker)
-
-This is a production-ready enterprise-scale monorepo architecture featuring a Laravel REST API backend and a Next.js App Router frontend, all containerized with Docker.
+# RUTAF SUPER APP Ecosystem
+1: 
+2: This is a production-ready enterprise-scale Islamic education ecosystem featuring a Laravel 12 REST API backend and a Next.js App Router frontend.
+3: 
 
 ## 🚀 Quick Start
 
