@@ -12,7 +12,9 @@
         "laravel/horizon": "^5.46",
         "laravel/sanctum": "^4.0",
         "laravel/socialite": "^5.27",
-        "laravel/tinker": "^3.0"
+        "laravel/tinker": "^3.0",
+        "midtrans/midtrans-php": "^2.6",
+        "spatie/laravel-permission": "*"
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",

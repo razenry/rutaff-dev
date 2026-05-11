@@ -23,7 +23,7 @@ export default function LoginPage() {
           localStorage.setItem('token', token);
           const response = await api.get('/me');
           setAuth(response.data.data, token);
-          router.push('/todos');
+          router.push('/dashboard');
         } catch (err) {
           setError('SSO verification failed');
         }
@@ -38,7 +38,7 @@ export default function LoginPage() {
       const response = await api.post('/login', { email, password });
       const { user, access_token } = response.data.data;
       setAuth(user, access_token);
-      router.push('/todos');
+      router.push('/dashboard');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
     }
@@ -56,7 +56,8 @@ export default function LoginPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
       <div className="w-full max-w-md space-y-8 rounded-xl bg-white p-10 shadow-lg">
-        <h2 className="text-center text-3xl font-extrabold text-gray-900">Login to LMS</h2>
+        <h2 className="text-center text-3xl font-extrabold text-primary">RUTAF SUPER APP</h2>
+        <p className="text-center text-sm text-muted-foreground">Sign in to your account</p>
         <form className="mt-8 space-y-6" onSubmit={handleLogin}>
           <div className="space-y-4 rounded-md shadow-sm">
             <input
