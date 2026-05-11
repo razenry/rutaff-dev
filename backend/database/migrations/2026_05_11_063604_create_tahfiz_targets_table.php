@@ -11,12 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('todos', function (Blueprint $table) {
-            $table->id();
-            $table->foreignUuid('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
+        Schema::create('tahfiz_targets', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('student_id')->constrained('users')->onDelete('cascade');
+            $table->string('target_surah');
+            $table->integer('target_juz')->nullable();
+            $table->date('deadline')->nullable();
             $table->boolean('is_completed')->default(false);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -25,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('todos');
+        Schema::dropIfExists('tahfiz_targets');
     }
 };

@@ -10,12 +10,16 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-#[Fillable(['name', 'email', 'password', 'social_id', 'social_type'])]
-#[Hidden(['password', 'remember_token'])]
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Permission\Traits\HasRoles;
+
+#[Fillable(['institution_id', 'name', 'email', 'phone', 'password', 'is_active', 'otp', 'otp_expires_at', 'social_id', 'social_type'])]
+#[Hidden(['password', 'remember_token', 'otp'])]
 class User extends Authenticatable
 {
     /** @use HasFactory<UserFactory> */
-    use \Laravel\Sanctum\HasApiTokens, HasFactory, Notifiable;
+    use \Laravel\Sanctum\HasApiTokens, HasFactory, Notifiable, HasUuids, SoftDeletes, HasRoles;
 
     /**
      * Get the attributes that should be cast.
@@ -33,5 +37,20 @@ class User extends Authenticatable
     public function todos()
     {
         return $this->hasMany(Todo::class);
+    }
+
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
+
+    public function transactions()
+    {
+        return $this->hasMany(Transaction::class);
+    }
+
+    public function studentWallet()
+    {
+        return $this->hasOne(StudentWallet::class, 'student_id');
     }
 }
