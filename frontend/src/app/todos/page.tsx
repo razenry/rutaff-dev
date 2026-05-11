@@ -55,7 +55,7 @@ export default function TodoPage() {
         <form onSubmit={handleAddTodo} className="mb-8 flex gap-2">
           <input
             type="text"
-            className="flex-1 rounded-lg border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-indigo-500"
+            className="flex-1 rounded-lg border-gray-300 px-4 py-2 focus:border-indigo-500 focus:ring-indigo-500 text-black"
             placeholder="What needs to be done?"
             value={newTodo}
             onChange={(e) => setNewTodo(e.target.value)}

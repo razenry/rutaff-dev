@@ -1,4 +1,4 @@
-FROM php:8.4-fpm as base
+FROM php:8.4-fpm AS base
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
@@ -28,12 +28,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/backend
 
 # Development stage
-FROM base as development
+FROM base AS development
 RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
 CMD ["php-fpm"]
 
 # Production stage
-FROM base as production
+FROM base AS production
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 # Copy existing application directory contents
 COPY ./backend /var/www/backend

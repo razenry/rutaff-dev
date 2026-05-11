@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import api from '@/lib/axios';
 import { useAuthStore } from '@/store/useAuthStore';
 import { useRouter } from 'next/navigation';
@@ -12,6 +12,26 @@ export default function LoginPage() {
   const setAuth = useAuthStore((state) => state.setAuth);
   const router = useRouter();
 
+  useEffect(() => {
+    // Handle SSO Callback token from URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('token');
+    
+    if (token) {
+      const handleSsoSuccess = async () => {
+        try {
+          localStorage.setItem('token', token);
+          const response = await api.get('/me');
+          setAuth(response.data.data, token);
+          router.push('/todos');
+        } catch (err) {
+          setError('SSO verification failed');
+        }
+      };
+      handleSsoSuccess();
+    }
+  }, [router, setAuth]);
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
@@ -21,6 +41,15 @@ export default function LoginPage() {
       router.push('/todos');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login failed');
+    }
+  };
+
+  const handleGoogleSso = async () => {
+    try {
+      const response = await api.get('/auth/google/redirect');
+      window.location.href = response.data.url;
+    } catch (err) {
+      setError('Failed to initiate Google SSO');
     }
   };
 
@@ -55,6 +84,31 @@ export default function LoginPage() {
             Sign in
           </button>
         </form>
+
+        <div className="mt-6">
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-300"></div>
+            </div>
+            <div className="relative flex justify-center text-sm">
+              <span className="bg-white px-2 text-gray-500">Or continue with</span>
+            </div>
+          </div>
+
+          <div className="mt-6">
+            <button
+              onClick={handleGoogleSso}
+              className="flex w-full justify-center rounded-md border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50"
+            >
+              <img
+                className="h-5 w-5 mr-2"
+                src="https://www.svgrepo.com/show/475656/google-color.svg"
+                alt="Google"
+              />
+              Sign in with Google
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

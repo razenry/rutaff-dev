@@ -13,6 +13,11 @@ Base URL: `http://localhost/api/v1`
 - Body: `email`, `password`
 - Returns: `user` object and `access_token`
 
+### Social Login (SSO)
+`POST /social-login`
+- Body: `email`, `name`, `social_id`, `social_type`
+- Returns: `user` object and `access_token`
+
 ### Logout
 `POST /logout` (Auth Required)
 
