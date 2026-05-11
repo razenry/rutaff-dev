@@ -4,17 +4,24 @@ namespace App\Http\Controllers\API\V1;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Services\AuthService;
 use App\Traits\ApiResponser;
 use Laravel\Socialite\Facades\Socialite;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
 class AuthController extends Controller
 {
     use ApiResponser;
+
+    protected AuthService $authService;
+
+    public function __construct(AuthService $authService)
+    {
+        $this->authService = $authService;
+    }
 
     public function register(Request $request): JsonResponse
     {
@@ -44,20 +51,24 @@ class AuthController extends Controller
         $request->validate([
             'email' => ['required', 'string', 'email'],
             'password' => ['required', 'string'],
+            'device_name' => ['nullable', 'string'],
         ]);
 
-        if (!Auth::attempt($request->only('email', 'password'))) {
-            return $this->errorResponse('Invalid login credentials', 401);
+        try {
+            $result = $this->authService->login(
+                $request->email,
+                $request->password,
+                $request->device_name ?? 'web'
+            );
+
+            return $this->successResponse([
+                'user' => $result['user'],
+                'access_token' => $result['token'],
+                'token_type' => 'Bearer',
+            ], 'User logged in successfully');
+        } catch (\Exception $e) {
+            return $this->errorResponse($e->getMessage(), 401);
         }
-
-        $user = User::where('email', $request->email)->firstOrFail();
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return $this->successResponse([
-            'user' => $user,
-            'access_token' => $token,
-            'token_type' => 'Bearer',
-        ], 'User logged in successfully');
     }
 
     public function socialLogin(Request $request): JsonResponse
@@ -123,13 +134,21 @@ class AuthController extends Controller
 
     public function logout(Request $request): JsonResponse
     {
-        $request->user()->currentAccessToken()->delete();
-
+        $this->authService->logout($request->user());
         return $this->successResponse(null, 'User logged out successfully');
     }
 
     public function me(Request $request): JsonResponse
     {
-        return $this->successResponse($request->user(), 'User profile retrieved successfully');
+        $user = $request->user()->load(['roles', 'institution']);
+        
+        $roles = $user->getRoleNames();
+        $permissions = $user->getAllPermissions()->pluck('name');
+        
+        $userData = $user->toArray();
+        $userData['roles'] = $roles;
+        $userData['permissions'] = $permissions;
+
+        return $this->successResponse($userData, 'User profile retrieved successfully');
     }
 }

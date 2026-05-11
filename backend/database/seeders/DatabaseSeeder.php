@@ -15,21 +15,37 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // Create Roles
+        $roles = [
+            'Super Admin',
+            'Admin',
+            'Teacher',
+            'Musyrif',
+            'Parent',
+            'Student',
+            'Finance',
+            'Security',
+            'Public User'
+        ];
 
-        User::factory()->create([
-            'name' => 'Razenry',
-            'email' => 'razenry@lms.com',
-        ]);
+        foreach ($roles as $role) {
+            \Spatie\Permission\Models\Role::firstOrCreate(['name' => $role]);
+        }
+
+        // Create Super Admin User
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'superadmin@rutaf.com'],
+            [
+                'name' => 'Super Admin Rutaf',
+                'password' => bcrypt('password'),
+                'email_verified_at' => now(),
+            ]
+        );
+        $superAdmin->assignRole('Super Admin');
 
         \App\Models\Article::create([
-            'title' => 'Selamat Datang di LMS',
-            'content' => 'Ini adalah artikel pertama di platform Learning Management System kami.',
-        ]);
-
-        \App\Models\Article::create([
-            'title' => 'Panduan Belajar',
-            'content' => 'Pelajari cara menggunakan fitur-fitur yang tersedia untuk memaksimalkan pembelajaran Anda.',
+            'title' => 'Selamat Datang di RUTAF SUPER APP',
+            'content' => 'Ini adalah artikel pertama di platform RUTAF SUPER APP kami.',
         ]);
     }
 }
