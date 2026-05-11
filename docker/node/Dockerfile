@@ -5,7 +5,7 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+RUN npm install --legacy-peer-deps
 
 # Rebuild the source code only when needed
 FROM base AS builder
@@ -16,7 +16,7 @@ ENV NEXT_TELEMETRY_DISABLED 1
 RUN npm run build
 
 # Development image
-FROM base AS development
+FROM deps AS development
 WORKDIR /app
 ENV NODE_ENV development
 ENV NEXT_TELEMETRY_DISABLED 1
