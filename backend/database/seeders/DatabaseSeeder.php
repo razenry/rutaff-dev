@@ -21,5 +21,15 @@ class DatabaseSeeder extends Seeder
             'name' => 'Test User',
             'email' => 'test@example.com',
         ]);
+
+        \App\Models\Article::create([
+            'title' => 'Selamat Datang di LMS',
+            'content' => 'Ini adalah artikel pertama di platform Learning Management System kami.',
+        ]);
+
+        \App\Models\Article::create([
+            'title' => 'Panduan Belajar',
+            'content' => 'Pelajari cara menggunakan fitur-fitur yang tersedia untuk memaksimalkan pembelajaran Anda.',
+        ]);
     }
 }
